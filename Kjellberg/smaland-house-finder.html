@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Småland House Finder - Cheap Houses Near Water</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .filters {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .filters h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .checkbox-group label:hover {
+            background: #e3f2fd;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .search-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-hemnet {
+            background: linear-gradient(135deg, #00a651 0%, #008c44 100%);
+            color: white;
+        }
+
+        .btn-booli {
+            background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
+            color: white;
+        }
+
+        .btn-blocket {
+            background: linear-gradient(135deg, #c62828 0%, #a31f1f 100%);
+            color: white;
+        }
+
+        .btn-bovision {
+            background: linear-gradient(135deg, #5c6bc0 0%, #4a5ab8 100%);
+            color: white;
+        }
+
+        .btn-all {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 18px 40px;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .results-section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .quick-link-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .quick-link-card h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .quick-link-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .quick-link-card a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2a5298;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .quick-link-card a:hover {
+            background: #1e3c72;
+        }
+
+        .tips-section {
+            margin-top: 30px;
+            background: #fff3e0;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .tips-section h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tips-section li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .tips-section li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .water-keywords {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+        }
+
+        .water-keywords h4 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-tag {
+            background: #1976d2;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .keyword-tag:hover {
+            background: #1565c0;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏡 Småland House Finder</h1>
+            <p>Find cheap houses near water in beautiful Småland, Sweden</p>
+        </header>
+
+        <div class="filters">
+            <h2>🔍 Search Filters</h2>
+
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="maxPrice">Max Price (SEK)</label>
+                    <select id="maxPrice">
+                        <option value="500000">500 000 kr</option>
+                        <option value="750000">750 000 kr</option>
+                        <option value="1000000" selected>1 000 000 kr</option>
+                        <option value="1500000">1 500 000 kr</option>
+                        <option value="2000000">2 000 000 kr</option>
+                        <option value="2500000">2 500 000 kr</option>
+                        <option value="3000000">3 000 000 kr</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="region">Region in Småland</label>
+                    <select id="region">
+                        <option value="all">All Småland</option>
+                        <option value="jonkoping">Jönköpings län</option>
+                        <option value="kronoberg">Kronobergs län</option>
+                        <option value="kalmar">Kalmar län</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="propertyType">Property Type</label>
+                    <select id="propertyType">
+                        <option value="villa">Villa / House</option>
+                        <option value="fritidshus">Fritidshus (Vacation Home)</option>
+                        <option value="gard">Gård (Farm)</option>
+                        <option value="all" selected>All Types</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="minRooms">Min Rooms</label>
+                    <select id="minRooms">
+                        <option value="1">1+</option>
+                        <option value="2" selected>2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5+</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="waterfront" checked> 🌊 Waterfront (Sjötomt)</label>
+                <label><input type="checkbox" id="natureClose" checked> 🌲 Close to Nature</label>
+                <label><input type="checkbox" id="cheapest"> 💰 Sort by Cheapest</label>
+                <label><input type="checkbox" id="newListings"> 🆕 New Listings Only</label>
+            </div>
+
+            <div class="search-buttons">
+                <button class="search-btn btn-hemnet" onclick="searchHemnet()">
+                    🏠 Search Hemnet
+                </button>
+                <button class="search-btn btn-booli" onclick="searchBooli()">
+                    📊 Search Booli
+                </button>
+                <button class="search-btn btn-blocket" onclick="searchBlocket()">
+                    📋 Search Blocket
+                </button>
+                <button class="search-btn btn-bovision" onclick="searchBovision()">
+                    👁️ Search Bovision
+                </button>
+                <button class="search-btn btn-all" onclick="searchAll()">
+                    🚀 Search All Sites
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2>⚡ Quick Search Links - Waterfront Properties</h2>
+
+            <div class="quick-links">
+                <div class="quick-link-card">
+                    <h3>🏖️ Sjötomt i Småland (Lakefront)</h3>
+                    <p>Properties directly on lakes in all of Småland. Perfect for swimming and fishing!</p>
+                    <a href="https://www.hemnet.se/bostader?location_ids%5B%5D=17755&location_ids%5B%5D=17850&location_ids%5B%5D=17783&item_types%5B%5D=villa&item_types%5B%5D=fritidshus&keywords=sj%C3%B6tomt" target="_blank">Search Hemnet →</a>
+                </div>
+
+                <div class="quick-link-card">
+                    <h3>💰 Cheapest in Kronoberg</h3>
+                    <p>Budget-friendly houses in Kronoberg county - heart of Småland with many lakes.</p>
+                    <a href="https://www.hemnet.se/bostader?location_ids%5B%5D=17850&price_max=1000000&item_types%5B%5D=villa&item_types%5B%5D=fritidshus" target="_blank">Search Hemnet →</a>
+                </div>
+
+                <div class="quick-link-card">
+                    <h3>🌲 Rural Jönköping</h3>
+                    <p>Countryside properties near Vättern - Sweden's second largest lake.</p>
+                    <a href="https://www.hemnet.se/bostader?location_ids%5B%5D=17755&price_max=1500000&item_types%5B%5D=villa&item_types%5B%5D=fritidshus&keywords=sj%C3%B6" target="_blank">Search Hemnet →</a>
+                </div>
+
+                <div class="quick-link-card">
+                    <h3>🏝️ Kalmar Coast & Islands</h3>
+                    <p>Properties near the Baltic Sea coast and beautiful archipelago.</p>
+                    <a href="https://www.hemnet.se/bostader?location_ids%5B%5D=17783&price_max=2000000&item_types%5B%5D=villa&item_types%5B%5D=fritidshus&keywords=hav+OR+strand+OR+%C3%B6" target="_blank">Search Hemnet →</a>
+                </div>
+
+                <div class="quick-link-card">
+                    <h3>🎣 Fishing Cabins</h3>
+                    <p>Small cottages perfect for fishing enthusiasts - many under 500k SEK!</p>
+                    <a href="https://www.hemnet.se/bostader?location_ids%5B%5D=17755&location_ids%5B%5D=17850&location_ids%5B%5D=17783&price_max=500000&item_types%5B%5D=fritidshus&keywords=fiske+OR+sj%C3%B6" target="_blank">Search Hemnet →</a>
+                </div>
+
+                <div class="quick-link-card">
+                    <h3>🏡 Strandtomt (Beach Plot)</h3>
+                    <p>Properties with their own beach or shoreline access.</p>
+                    <a href="https://www.hemnet.se/bostader?location_ids%5B%5D=17755&location_ids%5B%5D=17850&location_ids%5B%5D=17783&item_types%5B%5D=villa&item_types%5B%5D=fritidshus&keywords=strandtomt+OR+strand" target="_blank">Search Hemnet →</a>
+                </div>
+            </div>
+
+            <div class="water-keywords">
+                <h4>🔎 Click to add water-related search terms:</h4>
+                <div class="keyword-tags">
+                    <span class="keyword-tag" onclick="addKeyword('sjötomt')">Sjötomt (Lake plot)</span>
+                    <span class="keyword-tag" onclick="addKeyword('strandtomt')">Strandtomt (Beach plot)</span>
+                    <span class="keyword-tag" onclick="addKeyword('sjöutsikt')">Sjöutsikt (Lake view)</span>
+                    <span class="keyword-tag" onclick="addKeyword('havsutsikt')">Havsutsikt (Sea view)</span>
+                    <span class="keyword-tag" onclick="addKeyword('vattennära')">Vattennära (Near water)</span>
+                    <span class="keyword-tag" onclick="addKeyword('egen brygga')">Egen brygga (Own dock)</span>
+                    <span class="keyword-tag" onclick="addKeyword('båtplats')">Båtplats (Boat spot)</span>
+                    <span class="keyword-tag" onclick="addKeyword('fiskevatten')">Fiskevatten (Fishing water)</span>
+                </div>
+                <input type="text" id="customKeywords" placeholder="Your search keywords..." style="margin-top: 15px; width: 100%; padding: 12px; border: 2px solid #1976d2; border-radius: 8px;">
+            </div>
+
+            <div class="tips-section">
+                <h3>Tips for Finding Cheap Waterfront Properties</h3>
+                <ul>
+                    <li><strong>Look for "Fritidshus"</strong> - vacation homes are often cheaper than year-round houses</li>
+                    <li><strong>Check Kronoberg</strong> - generally the cheapest county in Småland with many lakes</li>
+                    <li><strong>Search for "renoveringsobjekt"</strong> - fixer-uppers can be very affordable</li>
+                    <li><strong>Consider "tomt"</strong> - buying land near water can be cheaper than buying a house</li>
+                    <li><strong>Look at auctions</strong> - Kronofogden sometimes auctions cheap properties</li>
+                    <li><strong>Set up alerts</strong> - be first to see new listings on Hemnet</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Made for finding your dream home in Småland 🇸🇪</p>
+        </footer>
+    </div>
+
+    <script>
+        // Småland region location IDs for Hemnet
+        const locationIds = {
+            jonkoping: '17755',
+            kronoberg: '17850',
+            kalmar: '17783',
+            all: '17755,17850,17783'
+        };
+
+        // Build Hemnet URL
+        function buildHemnetUrl() {
+            const maxPrice = document.getElementById('maxPrice').value;
+            const region = document.getElementById('region').value;
+            const propertyType = document.getElementById('propertyType').value;
+            const minRooms = document.getElementById('minRooms').value;
+            const waterfront = document.getElementById('waterfront').checked;
+            const cheapest = document.getElementById('cheapest').checked;
+            const customKeywords = document.getElementById('customKeywords').value;
+
+            let url = 'https://www.hemnet.se/bostader?';
+
+            // Add location(s)
+            if (region === 'all') {
+                url += 'location_ids%5B%5D=17755&location_ids%5B%5D=17850&location_ids%5B%5D=17783&';
+            } else {
+                url += `location_ids%5B%5D=${locationIds[region]}&`;
+            }
+
+            // Add price
+            url += `price_max=${maxPrice}&`;
+
+            // Add property type
+            if (propertyType !== 'all') {
+                url += `item_types%5B%5D=${propertyType}&`;
+            } else {
+                url += 'item_types%5B%5D=villa&item_types%5B%5D=fritidshus&item_types%5B%5D=gard&';
+            }
+
+            // Add rooms
+            url += `rooms_min=${minRooms}&`;
+
+            // Add keywords
+            let keywords = [];
+            if (waterfront) keywords.push('sjötomt', 'sjö', 'vatten', 'strand');
+            if (customKeywords) keywords.push(customKeywords);
+
+            if (keywords.length > 0) {
+                url += `keywords=${encodeURIComponent(keywords.join(' '))}&`;
+            }
+
+            // Sort by price if requested
+            if (cheapest) {
+                url += 'sorting=price_asc&';
+            }
+
+            return url;
+        }
+
+        // Build Booli URL
+        function buildBooliUrl() {
+            const maxPrice = document.getElementById('maxPrice').value;
+            const region = document.getElementById('region').value;
+
+            const booliRegions = {
+                jonkoping: 'jonkopings-lan',
+                kronoberg: 'kronobergs-lan',
+                kalmar: 'kalmar-lan',
+                all: 'smaland'
+            };
+
+            let url = `https://www.booli.se/slutpriser/${booliRegions[region] || 'smaland'}?`;
+            url += `maxListPrice=${maxPrice}&`;
+            url += 'objectType=villa,house,cottage&';
+
+            return url;
+        }
+
+        // Build Blocket URL
+        function buildBlocketUrl() {
+            const maxPrice = document.getElementById('maxPrice').value;
+
+            let url = 'https://www.blocket.se/annonser/hela_sverige/bostad/hus_villor_till_salu?';
+            url += `price_to=${maxPrice}&`;
+            url += 'q=sm%C3%A5land+sj%C3%B6&';
+
+            return url;
+        }
+
+        // Build Bovision URL
+        function buildBovisionUrl() {
+            let url = 'https://www.bovision.se/sok/?';
+            url += 'type=villa,cottage&';
+            url += 'area=smaland&';
+            url += 'keywords=sj%C3%B6tomt';
+
+            return url;
+        }
+
+        function searchHemnet() {
+            window.open(buildHemnetUrl(), '_blank');
+        }
+
+        function searchBooli() {
+            window.open(buildBooliUrl(), '_blank');
+        }
+
+        function searchBlocket() {
+            window.open(buildBlocketUrl(), '_blank');
+        }
+
+        function searchBovision() {
+            window.open(buildBovisionUrl(), '_blank');
+        }
+
+        function searchAll() {
+            searchHemnet();
+            setTimeout(() => searchBooli(), 300);
+            setTimeout(() => searchBlocket(), 600);
+            setTimeout(() => searchBovision(), 900);
+        }
+
+        function addKeyword(keyword) {
+            const input = document.getElementById('customKeywords');
+            if (input.value) {
+                input.value += ' ' + keyword;
+            } else {
+                input.value = keyword;
+            }
+        }
+
+        // Show welcome message
+        console.log('🏡 Småland House Finder loaded!');
+        console.log('Searching for cheap waterfront properties in beautiful Småland, Sweden.');
+    </script>
+</body>
+</html>
