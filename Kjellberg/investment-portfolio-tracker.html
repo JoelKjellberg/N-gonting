@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Portfolio Tracker - Commodities & Crypto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #e94560;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #a8a8a8;
+            font-size: 1.1rem;
+        }
+
+        .disclaimer {
+            background: rgba(233, 69, 96, 0.1);
+            border: 1px solid #e94560;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            color: #ffb8b8;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-card h3 {
+            color: #a8a8a8;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .summary-card .value.positive {
+            color: #4ade80;
+        }
+
+        .summary-card .value.negative {
+            color: #f87171;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .asset-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .asset-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .asset-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .copper .asset-icon { background: linear-gradient(135deg, #b87333, #cd7f32); }
+        .silver .asset-icon { background: linear-gradient(135deg, #c0c0c0, #a8a8a8); }
+        .gold .asset-icon { background: linear-gradient(135deg, #ffd700, #ffb800); }
+        .bitcoin .asset-icon { background: linear-gradient(135deg, #f7931a, #ff9500); }
+
+        .asset-info h2 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .asset-info .quantity {
+            color: #a8a8a8;
+            font-size: 0.95rem;
+        }
+
+        .asset-body {
+            padding: 0 20px 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .price-row:last-child {
+            border-bottom: none;
+        }
+
+        .price-label {
+            color: #a8a8a8;
+        }
+
+        .price-value {
+            font-weight: 600;
+        }
+
+        .price-value.forecast {
+            color: #4ade80;
+        }
+
+        .return-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+
+        .return-badge.positive {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+
+        .return-badge.negative {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+        }
+
+        .allocation-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .allocation-section h2 {
+            margin-bottom: 25px;
+            color: #e94560;
+        }
+
+        .allocation-bar {
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .allocation-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: flex 0.3s ease;
+        }
+
+        .allocation-segment.copper { background: linear-gradient(90deg, #b87333, #cd7f32); }
+        .allocation-segment.silver { background: linear-gradient(90deg, #c0c0c0, #d4d4d4); }
+        .allocation-segment.gold { background: linear-gradient(90deg, #ffd700, #ffcc00); }
+        .allocation-segment.bitcoin { background: linear-gradient(90deg, #f7931a, #ff9500); }
+
+        .allocation-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+
+        .legend-color.copper { background: #cd7f32; }
+        .legend-color.silver { background: #c0c0c0; }
+        .legend-color.gold { background: #ffd700; }
+        .legend-color.bitcoin { background: #f7931a; }
+
+        .forecast-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .forecast-table th,
+        .forecast-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .forecast-table th {
+            color: #a8a8a8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .source-tag {
+            font-size: 0.75rem;
+            color: #a8a8a8;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .risk-section {
+            background: rgba(233, 69, 96, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .risk-section h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+
+        .risk-list {
+            list-style: none;
+        }
+
+        .risk-list li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .risk-list li::before {
+            content: "!";
+            position: absolute;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            background: #e94560;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .update-info {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .summary-card .value {
+                font-size: 1.5rem;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Investment Portfolio Tracker</h1>
+            <p class="subtitle">Commodities & Cryptocurrency - 11-Month Forecast Analysis</p>
+        </header>
+
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> This is a hypothetical portfolio tracker for educational purposes only.
+            Price forecasts are based on analyst predictions and are not guaranteed.
+            Physical commodity holdings carry storage costs and theft risks.
+            Always conduct your own research before making investment decisions.
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Total Investment</h3>
+                <div class="value" id="totalInvestment">Loading...</div>
+            </div>
+            <div class="summary-card">
+                <h3>Projected Value</h3>
+                <div class="value positive" id="projectedValue">Loading...</div>
+            </div>
+            <div class="summary-card">
+                <h3>Expected Return</h3>
+                <div class="value positive" id="expectedReturn">Loading...</div>
+            </div>
+            <div class="summary-card">
+                <h3>Return Percentage</h3>
+                <div class="value positive" id="returnPercentage">Loading...</div>
+            </div>
+        </div>
+
+        <div class="portfolio-grid">
+            <div class="asset-card copper">
+                <div class="asset-header">
+                    <div class="asset-icon">Cu</div>
+                    <div class="asset-info">
+                        <h2>Copper</h2>
+                        <span class="quantity">100 kg</span>
+                    </div>
+                </div>
+                <div class="asset-body">
+                    <div class="price-row">
+                        <span class="price-label">Current Value</span>
+                        <span class="price-value" id="copperCurrent">Loading...</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Current Price</span>
+                        <span class="price-value">$12,900/ton</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Forecast Price (Mid-2026)</span>
+                        <span class="price-value forecast">$12,500/ton</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Projected Value</span>
+                        <span class="price-value forecast" id="copperProjected">Loading...</span>
+                    </div>
+                    <div class="return-badge negative" id="copperReturn">Loading...</div>
+                    <span class="source-tag">Source: J.P. Morgan forecast</span>
+                </div>
+            </div>
+
+            <div class="asset-card silver">
+                <div class="asset-header">
+                    <div class="asset-icon">Ag</div>
+                    <div class="asset-info">
+                        <h2>Silver</h2>
+                        <span class="quantity">1 kg (32.15 oz)</span>
+                    </div>
+                </div>
+                <div class="asset-body">
+                    <div class="price-row">
+                        <span class="price-label">Current Value</span>
+                        <span class="price-value" id="silverCurrent">Loading...</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Current Price</span>
+                        <span class="price-value">$32/oz</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Forecast Price</span>
+                        <span class="price-value forecast">$100/oz</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Projected Value</span>
+                        <span class="price-value forecast" id="silverProjected">Loading...</span>
+                    </div>
+                    <div class="return-badge positive" id="silverReturn">Loading...</div>
+                    <span class="source-tag">Source: GoldSilver analysts</span>
+                </div>
+            </div>
+
+            <div class="asset-card gold">
+                <div class="asset-header">
+                    <div class="asset-icon">Au</div>
+                    <div class="asset-info">
+                        <h2>Gold</h2>
+                        <span class="quantity">50g (1.61 oz)</span>
+                    </div>
+                </div>
+                <div class="asset-body">
+                    <div class="price-row">
+                        <span class="price-label">Current Value</span>
+                        <span class="price-value" id="goldCurrent">Loading...</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Current Price</span>
+                        <span class="price-value">$2,700/oz</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Forecast Price (Year-End)</span>
+                        <span class="price-value forecast">$4,500/oz</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Projected Value</span>
+                        <span class="price-value forecast" id="goldProjected">Loading...</span>
+                    </div>
+                    <div class="return-badge positive" id="goldReturn">Loading...</div>
+                    <span class="source-tag">Source: HSBC forecast</span>
+                </div>
+            </div>
+
+            <div class="asset-card bitcoin">
+                <div class="asset-header">
+                    <div class="asset-icon">&#8383;</div>
+                    <div class="asset-info">
+                        <h2>Bitcoin</h2>
+                        <span class="quantity">0.5 BTC</span>
+                    </div>
+                </div>
+                <div class="asset-body">
+                    <div class="price-row">
+                        <span class="price-label">Current Value</span>
+                        <span class="price-value" id="btcCurrent">Loading...</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Current Price</span>
+                        <span class="price-value">$95,000</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Forecast Price</span>
+                        <span class="price-value forecast">$110,000</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Projected Value</span>
+                        <span class="price-value forecast" id="btcProjected">Loading...</span>
+                    </div>
+                    <div class="return-badge positive" id="btcReturn">Loading...</div>
+                    <span class="source-tag">Source: CNBC analyst forecast</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="allocation-section">
+            <h2>Portfolio Allocation</h2>
+            <div class="allocation-bar" id="allocationBar"></div>
+            <div class="allocation-legend">
+                <div class="legend-item">
+                    <div class="legend-color copper"></div>
+                    <span id="copperAlloc">Copper: Loading...</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color silver"></div>
+                    <span id="silverAlloc">Silver: Loading...</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color gold"></div>
+                    <span id="goldAlloc">Gold: Loading...</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color bitcoin"></div>
+                    <span id="btcAlloc">Bitcoin: Loading...</span>
+                </div>
+            </div>
+
+            <table class="forecast-table">
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Investment Theme</th>
+                        <th>Key Drivers</th>
+                        <th>Risk Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Copper</td>
+                        <td>Green Energy Transition</td>
+                        <td>EV demand, Solar panels, Infrastructure</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Silver</td>
+                        <td>Industrial + Monetary</td>
+                        <td>Solar PV, Electronics, Inflation hedge</td>
+                        <td>Medium-High</td>
+                    </tr>
+                    <tr>
+                        <td>Gold</td>
+                        <td>Safe Haven</td>
+                        <td>Inflation, Geopolitical uncertainty, Central bank buying</td>
+                        <td>Low-Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Bitcoin</td>
+                        <td>Digital Store of Value</td>
+                        <td>Institutional adoption, Halving cycle, ETF flows</td>
+                        <td>High</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="risk-section">
+            <h2>Key Risks & Considerations</h2>
+            <ul class="risk-list">
+                <li><strong>Storage Costs:</strong> Physical copper, silver, and gold require secure storage, insurance, and handling costs that can erode returns.</li>
+                <li><strong>Theft Risk:</strong> Physical holdings are vulnerable to theft. Consider allocated storage or ETFs for large positions.</li>
+                <li><strong>Allocation Imbalance:</strong> Bitcoin represents ~79% of the portfolio value, creating concentration risk.</li>
+                <li><strong>Forecast Uncertainty:</strong> Analyst price targets are speculative and subject to significant revision based on market conditions.</li>
+                <li><strong>Currency Risk:</strong> INR/USD fluctuations can significantly impact returns for INR-denominated investors.</li>
+                <li><strong>Liquidity:</strong> Physical commodities have lower liquidity compared to paper assets or crypto exchanges.</li>
+                <li><strong>Regulatory Risk:</strong> Cryptocurrency regulations continue to evolve and may impact BTC holdings.</li>
+            </ul>
+        </div>
+
+        <div class="update-info">
+            <p>Data based on analyst forecasts as of January 2026. Prices in USD unless otherwise noted.</p>
+            <p>Exchange rate assumed: 1 USD = ~83 INR for reference calculations.</p>
+        </div>
+    </div>
+
+    <script>
+        // Portfolio Configuration
+        const portfolio = {
+            copper: {
+                quantity: 100, // kg
+                quantityTons: 0.1, // 100kg = 0.1 tons
+                currentPrice: 12900, // USD per ton
+                forecastPrice: 12500, // USD per ton
+                investmentINR: 130000 // 1.3 lakh
+            },
+            silver: {
+                quantity: 1, // kg
+                quantityOz: 32.15, // 1kg = 32.15 troy ounces
+                currentPrice: 32, // USD per oz
+                forecastPrice: 100, // USD per oz
+                investmentINR: 295000 // 2.95 lakh
+            },
+            gold: {
+                quantity: 50, // grams
+                quantityOz: 1.6075, // 50g = 1.6075 troy ounces
+                currentPrice: 2700, // USD per oz
+                forecastPrice: 4500, // USD per oz
+                investmentINR: 717000 // 7.17 lakh
+            },
+            bitcoin: {
+                quantity: 0.5, // BTC
+                currentPrice: 95000, // USD per BTC
+                forecastPrice: 110000, // USD per BTC
+                investmentINR: 4320000 // 43.2 lakh
+            }
+        };
+
+        const exchangeRate = 83; // INR per USD (approximate)
+
+        // Calculate values
+        function calculatePortfolio() {
+            // Current USD values
+            const copperCurrentUSD = portfolio.copper.quantityTons * portfolio.copper.currentPrice;
+            const silverCurrentUSD = portfolio.silver.quantityOz * portfolio.silver.currentPrice;
+            const goldCurrentUSD = portfolio.gold.quantityOz * portfolio.gold.currentPrice;
+            const btcCurrentUSD = portfolio.bitcoin.quantity * portfolio.bitcoin.currentPrice;
+
+            // Projected USD values
+            const copperProjectedUSD = portfolio.copper.quantityTons * portfolio.copper.forecastPrice;
+            const silverProjectedUSD = portfolio.silver.quantityOz * portfolio.silver.forecastPrice;
+            const goldProjectedUSD = portfolio.gold.quantityOz * portfolio.gold.forecastPrice;
+            const btcProjectedUSD = portfolio.bitcoin.quantity * portfolio.bitcoin.forecastPrice;
+
+            // Total INR investment
+            const totalInvestmentINR = portfolio.copper.investmentINR +
+                                       portfolio.silver.investmentINR +
+                                       portfolio.gold.investmentINR +
+                                       portfolio.bitcoin.investmentINR;
+
+            // Current total USD
+            const totalCurrentUSD = copperCurrentUSD + silverCurrentUSD + goldCurrentUSD + btcCurrentUSD;
+
+            // Projected total USD
+            const totalProjectedUSD = copperProjectedUSD + silverProjectedUSD + goldProjectedUSD + btcProjectedUSD;
+
+            // Returns
+            const copperReturn = ((portfolio.copper.forecastPrice - portfolio.copper.currentPrice) / portfolio.copper.currentPrice) * 100;
+            const silverReturn = ((portfolio.silver.forecastPrice - portfolio.silver.currentPrice) / portfolio.silver.currentPrice) * 100;
+            const goldReturn = ((portfolio.gold.forecastPrice - portfolio.gold.currentPrice) / portfolio.gold.currentPrice) * 100;
+            const btcReturn = ((portfolio.bitcoin.forecastPrice - portfolio.bitcoin.currentPrice) / portfolio.bitcoin.currentPrice) * 100;
+
+            const totalReturn = totalProjectedUSD - totalCurrentUSD;
+            const totalReturnPercent = ((totalProjectedUSD - totalCurrentUSD) / totalCurrentUSD) * 100;
+
+            // Allocations
+            const copperAlloc = (portfolio.copper.investmentINR / totalInvestmentINR) * 100;
+            const silverAlloc = (portfolio.silver.investmentINR / totalInvestmentINR) * 100;
+            const goldAlloc = (portfolio.gold.investmentINR / totalInvestmentINR) * 100;
+            const btcAlloc = (portfolio.bitcoin.investmentINR / totalInvestmentINR) * 100;
+
+            return {
+                copper: { currentUSD: copperCurrentUSD, projectedUSD: copperProjectedUSD, return: copperReturn, alloc: copperAlloc },
+                silver: { currentUSD: silverCurrentUSD, projectedUSD: silverProjectedUSD, return: silverReturn, alloc: silverAlloc },
+                gold: { currentUSD: goldCurrentUSD, projectedUSD: goldProjectedUSD, return: goldReturn, alloc: goldAlloc },
+                bitcoin: { currentUSD: btcCurrentUSD, projectedUSD: btcProjectedUSD, return: btcReturn, alloc: btcAlloc },
+                total: {
+                    investmentINR: totalInvestmentINR,
+                    currentUSD: totalCurrentUSD,
+                    projectedUSD: totalProjectedUSD,
+                    returnUSD: totalReturn,
+                    returnPercent: totalReturnPercent
+                }
+            };
+        }
+
+        // Format currency
+        function formatUSD(value) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+        }
+
+        function formatINR(value) {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
+        }
+
+        function formatPercent(value) {
+            const sign = value >= 0 ? '+' : '';
+            return sign + value.toFixed(1) + '%';
+        }
+
+        // Update UI
+        function updateUI() {
+            const data = calculatePortfolio();
+
+            // Summary cards
+            document.getElementById('totalInvestment').textContent = formatINR(data.total.investmentINR);
+            document.getElementById('projectedValue').textContent = formatUSD(data.total.projectedUSD);
+            document.getElementById('expectedReturn').textContent = formatUSD(data.total.returnUSD);
+            document.getElementById('returnPercentage').textContent = formatPercent(data.total.returnPercent);
+
+            // Individual assets
+            document.getElementById('copperCurrent').textContent = formatUSD(data.copper.currentUSD);
+            document.getElementById('copperProjected').textContent = formatUSD(data.copper.projectedUSD);
+            document.getElementById('copperReturn').textContent = formatPercent(data.copper.return);
+            document.getElementById('copperReturn').className = 'return-badge ' + (data.copper.return >= 0 ? 'positive' : 'negative');
+
+            document.getElementById('silverCurrent').textContent = formatUSD(data.silver.currentUSD);
+            document.getElementById('silverProjected').textContent = formatUSD(data.silver.projectedUSD);
+            document.getElementById('silverReturn').textContent = formatPercent(data.silver.return);
+
+            document.getElementById('goldCurrent').textContent = formatUSD(data.gold.currentUSD);
+            document.getElementById('goldProjected').textContent = formatUSD(data.gold.projectedUSD);
+            document.getElementById('goldReturn').textContent = formatPercent(data.gold.return);
+
+            document.getElementById('btcCurrent').textContent = formatUSD(data.bitcoin.currentUSD);
+            document.getElementById('btcProjected').textContent = formatUSD(data.bitcoin.projectedUSD);
+            document.getElementById('btcReturn').textContent = formatPercent(data.bitcoin.return);
+
+            // Allocation bar
+            const allocationBar = document.getElementById('allocationBar');
+            allocationBar.innerHTML = `
+                <div class="allocation-segment copper" style="flex: ${data.copper.alloc}">${data.copper.alloc.toFixed(1)}%</div>
+                <div class="allocation-segment silver" style="flex: ${data.silver.alloc}">${data.silver.alloc.toFixed(1)}%</div>
+                <div class="allocation-segment gold" style="flex: ${data.gold.alloc}">${data.gold.alloc.toFixed(1)}%</div>
+                <div class="allocation-segment bitcoin" style="flex: ${data.bitcoin.alloc}">${data.bitcoin.alloc.toFixed(1)}%</div>
+            `;
+
+            // Allocation legend
+            document.getElementById('copperAlloc').textContent = `Copper: ${data.copper.alloc.toFixed(1)}% (${formatINR(portfolio.copper.investmentINR)})`;
+            document.getElementById('silverAlloc').textContent = `Silver: ${data.silver.alloc.toFixed(1)}% (${formatINR(portfolio.silver.investmentINR)})`;
+            document.getElementById('goldAlloc').textContent = `Gold: ${data.gold.alloc.toFixed(1)}% (${formatINR(portfolio.gold.investmentINR)})`;
+            document.getElementById('btcAlloc').textContent = `Bitcoin: ${data.bitcoin.alloc.toFixed(1)}% (${formatINR(portfolio.bitcoin.investmentINR)})`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', updateUI);
+    </script>
+</body>
+</html>
